@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/Flux-Frontiers/pypdb2pov/releases)
 [![PyPI](https://img.shields.io/pypi/v/pypdb2pov.svg)](https://pypi.org/project/pypdb2pov/)
 [![CI](https://github.com/Flux-Frontiers/pypdb2pov/actions/workflows/ci.yml/badge.svg)](https://github.com/Flux-Frontiers/pypdb2pov/actions/workflows/ci.yml)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22032366-blue.svg)](https://doi.org/10.5281/zenodo.22032366)
 
 # pypdb2pov -- PDB and mmCIF Structures as POV-Ray Scenes
 
@@ -346,7 +347,7 @@ If you use pypdb2pov in research or a project, please cite it:
 
 > Suchanek, E. G. (2026). *pypdb2pov: PDB and mmCIF Structures as POV-Ray
 > Scenes* (Version 0.1.1) [Software]. Flux-Frontiers.
-> https://github.com/Flux-Frontiers/pypdb2pov
+> https://doi.org/10.5281/zenodo.22032366
 
 **BibTeX**
 
@@ -357,6 +358,7 @@ If you use pypdb2pov in research or a project, please cite it:
   version   = {0.1.1},
   year      = {2026},
   publisher = {Flux-Frontiers},
+  doi       = {10.5281/zenodo.22032366},
   url       = {https://github.com/Flux-Frontiers/pypdb2pov},
 }
 ```

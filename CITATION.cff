@@ -1,0 +1,32 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: "pypdb2pov: PDB and mmCIF Structures as POV-Ray Scenes"
+abstract: >
+  pypdb2pov converts PDB and PDBx/mmCIF atomic structures into POV-Ray
+  scenes for ray-traced molecular graphics. It is a Python port of the
+  1993 C program pdb2pov by the same author, keeping its command-line
+  vocabulary while reading modern mmCIF, resolving elements from the
+  columns the format actually defines, and finding bonds with a spatial
+  grid rather than an all-pairs scan. The package has no runtime
+  dependencies and bundles the POV-Ray include files that give each
+  element its own texture.
+authors:
+  - family-names: Suchanek
+    given-names: "Eric G., PhD"
+    orcid: "https://orcid.org/0009-0009-0891-1507"
+    email: suchanek@flux-frontiers.com
+    affiliation: "Flux-Frontiers"
+version: "0.1.1"
+date-released: "2026-08-20"
+doi: "10.5281/zenodo.22032366"
+license: BSD-3-Clause
+repository-code: "https://github.com/Flux-Frontiers/pypdb2pov"
+url: "https://github.com/Flux-Frontiers/pypdb2pov"
+keywords:
+  - pdb
+  - mmcif
+  - povray
+  - molecular-graphics
+  - raytracing
+  - structural-biology
