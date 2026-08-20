@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # tests/data holds verbatim third-party files -- 1CRN.pdb as the wwPDB
+      # ships it, trailing padding and all -- and include/ holds the POV-Ray
+      # textures inherited from the C tree. Both are reference copies, not
+      # source: a fixer rewriting them destroys the property that makes them
+      # worth vendoring, even though (verified) the suite still passes if it
+      # does. Two files under tests/data would be rewritten today.
+      - id: trailing-whitespace
+        exclude: '^(tests/data/|src/pypdb2pov/include/)'
+      - id: end-of-file-fixer
+        exclude: '^(tests/data/|src/pypdb2pov/include/)'
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: debug-statements
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        pass_filenames: false
+        always_run: true
+      - id: ruff-format
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+
+  # Local hooks call .venv/bin directly, never `poetry run`: `poetry run`
+  # resolves against whatever VIRTUAL_ENV the calling shell advertises, so an
+  # inherited value from another repo silently redirects the hook. See
+  # kgrag_priv/docs/FLEET_STANDARDS.md, settled 2026-08-18.
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty
+        # --python .venv as well as the venv path: ty resolves site-packages
+        # from VIRTUAL_ENV regardless of which binary started it.
+        entry: .venv/bin/ty check src/ --python .venv
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: pytest
+        name: pytest
+        entry: .venv/bin/pytest --tb=short -q
+        language: system
+        pass_filenames: false
+        always_run: true

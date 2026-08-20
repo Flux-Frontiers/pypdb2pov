@@ -1,0 +1,203 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: lint-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dev dependencies
+        run: poetry install --no-interaction --with dev
+
+      - name: Check formatting
+        run: poetry run ruff format --check .
+
+      - name: Lint
+        run: poetry run ruff check .
+
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: typecheck-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --with dev
+
+      - name: Run ty
+        run: poetry run ty check src/
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: test-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      # `--with dev` only. The `kg` group carries the pycodekg and dockg CLIs
+      # that .mcp.json serves, which drag sentence-transformers and torch; no
+      # test invokes them, so CI declines the group.
+      - name: Install dependencies
+        run: poetry install --no-interaction --with dev
+
+      - name: Run tests
+        run: poetry run pytest
+
+  wheel:
+    name: Installed CLI
+    runs-on: ubuntu-latest
+    # Guards the one thing the other jobs structurally cannot see. lint,
+    # type-check and test all run against the source tree, so they pass even
+    # when the built wheel is missing modules the CLI imports -- or, here,
+    # when the bundled include/*.inc textures fail to land in the wheel as
+    # package data, which no source-tree test can notice. ia-kg 0.1.0 shipped
+    # that way: green CI, and every console script dead on `pip install`.
+    #
+    # Built with `python -m build` rather than `poetry build`, because the
+    # declared backend is setuptools -- `poetry build` would use poetry-core
+    # and ignore [tool.setuptools.package-data], producing an artifact users
+    # never receive.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Build wheel and sdist
+        run: |
+          pip install build twine
+          python -m build
+
+      # Rejects a README that will not render on PyPI, before the upload does.
+      - name: Check the distribution metadata
+        run: twine check dist/*
+
+      # The maintainer toolchain lives in Poetry groups precisely so it stays
+      # out of published metadata. If `dev` or `kg` ever reappears here,
+      # someone moved it back into [project.optional-dependencies].
+      - name: No maintainer tooling in the published metadata
+        run: |
+          python - <<'PY'
+          import re, sys, zipfile, glob
+          whl = glob.glob("dist/*.whl")[0]
+          z = zipfile.ZipFile(whl)
+          name = next(n for n in z.namelist() if n.endswith(".dist-info/METADATA"))
+          md = z.read(name).decode()
+          extras = re.findall(r"Provides-Extra: (\S+)", md)
+          reqs = re.findall(r"Requires-Dist: (.+)", md)
+          print("extras:", extras or "(none)")
+          print("requires:", reqs or "(none)")
+          leaked = [e for e in extras if e in {"dev", "kg", "all", "full"}]
+          if leaked or reqs:
+              sys.exit(f"maintainer tooling leaked into the wheel: {leaked or reqs}")
+          print("clean: no extras, no runtime requirements")
+          PY
+
+      - name: Install the wheel into a clean venv
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/pip install --quiet dist/*.whl
+
+      - name: Load every console-script entry point
+        run: |
+          cd /tmp
+          /tmp/smoke/bin/python - <<'PY'
+          import importlib.metadata as md
+          import sys
+
+          eps = [e for e in md.distribution("pypdb2pov").entry_points
+                 if e.group == "console_scripts"]
+          if not eps:
+              sys.exit("no console scripts found in the installed distribution")
+
+          failed = []
+          for e in sorted(eps, key=lambda e: e.name):
+              try:
+                  e.load()
+                  print(f"  ok    {e.name} -> {e.value}")
+              except Exception as exc:
+                  failed.append(e.name)
+                  print(f"  FAIL  {e.name} -> {e.value}\n        {type(exc).__name__}: {exc}")
+          if failed:
+              sys.exit(f"\n{len(failed)} console script(s) unusable when installed: "
+                       + ", ".join(failed))
+          print(f"\nall {len(eps)} console scripts load from a clean install")
+          PY
+
+      # The textures are the package's only data files, and a scene that
+      # cannot find them will not render. No source-tree test can catch this.
+      - name: The bundled textures must ship inside the wheel
+        run: |
+          cd /tmp
+          /tmp/smoke/bin/python - <<'PY'
+          import sys
+          from importlib.resources import files
+
+          inc = files("pypdb2pov").joinpath("include")
+          names = sorted(p.name for p in inc.iterdir() if p.name.endswith(".inc"))
+          if not names:
+              sys.exit("no include/*.inc files in the installed package")
+          print(f"{len(names)} texture includes shipped: " + ", ".join(names))
+          PY

@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write  # needed to create GitHub Releases and upload assets
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    # Trusted publishing needs the OIDC token, and PyPI mints it against the
+    # environment name -- so this must match the environment configured on the
+    # project's PyPI publisher settings.
+    environment: pypi
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Build wheel and sdist
+        run: |
+          pip install build twine
+          python -m build
+
+      # Catches the metadata problems PyPI rejects on upload -- chiefly a
+      # README that does not render -- before the release is half-published.
+      - name: Check the distribution metadata
+        run: twine check dist/*
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists -- uploading assets only"
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* \
+              --title "pypdb2pov $TAG" \
+              --generate-notes
+          fi
+
+      # Trusted publishing: no API token in secrets. Requires a one-time setup
+      # on PyPI -- project settings -> publishing -> add a GitHub publisher for
+      # Flux-Frontiers/pypdb2pov, workflow `release.yml`, environment `pypi`.
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

@@ -1,0 +1,95 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+wheels/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+
+# Type checkers / linters
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+
+# PyPI configuration file
+.pypirc
+
+# Visual Studio Code
+#  Ignored wholesale here. Most fleet repos track .vscode/ to preserve
+#  project-specific config (tasks, settings, MCP); this one does not.
+
+# Cursor
+#  `.cursorignore` specifies files/directories to exclude from AI features.
+.cursorignore
+.cursorindexingignore
+
+# macOS
+**/.DS_Store
+
+# Commit-message scratch file (written by /changelog-commit)
+commit.txt
+
+# Conversion artefacts from `make check`, and rendered output
+check_py_*.pov
+check_py_*.inc
+renders/*
+
+# Agent scratch dirs (Claude Code / Codex)
+.agents/
+.codex/
+
+# === KG generated artifacts (normalized across the fleet) ===
+# Databases, vector indexes and model caches are transient and
+# reproducible. snapshots/ is TRACKED and must never be ignored --
+# never use a bare `**/.<ns>/` pattern here, it swallows snapshots too.
+
+**/.pycodekg/*.sqlite
+**/.pycodekg/*.sqlite-shm
+**/.pycodekg/*.sqlite-wal
+**/.pycodekg/*.db
+**/.pycodekg/models
+
+**/.dockg/*.sqlite
+**/.dockg/*.sqlite-shm
+**/.dockg/*.sqlite-wal
+**/.dockg/*.db
+**/.dockg/models
+**/.dockg/embeddings.json
+
+# AgentKG local store -- nothing under it is ever tracked
+**/.agentkg/
+
+# MCP server config -- machine-specific, contains absolute paths
+.mcp.json
+.mcp.json.sav
+# === end KG generated artifacts ===
+
+# Misc
+uv.lock
+.vscode/
