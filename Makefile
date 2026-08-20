@@ -2,7 +2,7 @@
 # Makefile for pypdb2pov.
 #
 # Copyright (c) 1993-2026 Eric G. Suchanek, Ph.D.
-# Subject to the GNU License.
+# Subject to the BSD 3-Clause License.
 #
 # There is nothing to build -- the package is pure Python with no runtime
 # dependencies.  Most of what a Makefile used to do here now lives elsewhere:

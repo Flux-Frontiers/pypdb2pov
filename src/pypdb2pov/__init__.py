@@ -27,7 +27,7 @@ or, with the pieces exposed::
     bonds = find_bonds(structure, options.bond_threshold)
     write_scene(structure, options, "crambin.pov", bonds)
 
-Copyright (c) 1993-2026 Eric G. Suchanek, Ph.D.  Subject to the GNU License.
+Copyright (c) 1993-2026 Eric G. Suchanek, Ph.D.  Subject to the BSD 3-Clause License.
 """
 
 from __future__ import annotations

@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 #: This package's version, and the only one there is.
-PYPDB2POV_VERSION = "0.1.0"
+PYPDB2POV_VERSION = "0.1.1"
 
 #: POV-Ray language level the emitted scenes are written against.
 POV_VERSION = "3.7"

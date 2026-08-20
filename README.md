@@ -1,6 +1,6 @@
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue.svg)](https://www.python.org/)
-[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%202.0--or--later-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/Flux-Frontiers/pypdb2pov/releases)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/Flux-Frontiers/pypdb2pov/releases)
 [![PyPI](https://img.shields.io/pypi/v/pypdb2pov.svg)](https://pypi.org/project/pypdb2pov/)
 [![CI](https://github.com/Flux-Frontiers/pypdb2pov/actions/workflows/ci.yml/badge.svg)](https://github.com/Flux-Frontiers/pypdb2pov/actions/workflows/ci.yml)
 
@@ -345,7 +345,7 @@ If you use pypdb2pov in research or a project, please cite it:
 **APA**
 
 > Suchanek, E. G. (2026). *pypdb2pov: PDB and mmCIF Structures as POV-Ray
-> Scenes* (Version 0.1.0) [Software]. Flux-Frontiers.
+> Scenes* (Version 0.1.1) [Software]. Flux-Frontiers.
 > https://github.com/Flux-Frontiers/pypdb2pov
 
 **BibTeX**
@@ -354,7 +354,7 @@ If you use pypdb2pov in research or a project, please cite it:
 @software{suchanek_pypdb2pov,
   author    = {Suchanek, Eric G.},
   title     = {{pypdb2pov}: PDB and mmCIF Structures as POV-Ray Scenes},
-  version   = {0.1.0},
+  version   = {0.1.1},
   year      = {2026},
   publisher = {Flux-Frontiers},
   url       = {https://github.com/Flux-Frontiers/pypdb2pov},
@@ -365,7 +365,7 @@ If you use pypdb2pov in research or a project, please cite it:
 
 ## License
 
-[GNU General Public License v2.0 or later](LICENSE).
+[BSD 3-Clause License](LICENSE).
 Copyright (c) 1993-2026 Eric G. Suchanek, Ph.D.
 
 ---

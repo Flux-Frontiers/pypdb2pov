@@ -7,20 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Removed
-
-- **`PDB2POV_VERSION`**, and the second version number it carried. The package
-  tracked its own version alongside the pdb2pov release whose scenes it wrote,
-  and named both in every scene header and in `--version`. The distinction was
-  bookkeeping for a C program that is no longer in the picture: this is a
-  Python package with one version.
-
-  Scene headers lose the parenthesis -- `// Prepared by pypdb2pov 0.1.0 from
-  1CRN.pdb on ...` rather than `... 0.1.0 (pdb2pov 2.2) from ...` -- and
-  `--version` prints `pypdb2pov 0.1.0`. The constant is gone from the public
-  API, which drops from 40 names to 39.
-
 ### Changed
+
+- **The license is BSD 3-Clause, which is what `LICENSE` said all along.**
+  The file has carried the BSD 3-Clause text since the repository was
+  created; every declaration around it said GPL-2.0-or-later. The metadata,
+  the README badge and License section, and the `Makefile` and
+  `pypdb2pov/__init__.py` headers now agree with the file they point at, and
+  the built wheel declares `License-Expression: BSD-3-Clause` with the text
+  at `dist-info/licenses/LICENSE`.
+
+- **The package builds with poetry-core rather than setuptools**, so
+  `poetry build` is the one build command here and across the fleet, and the
+  `wheel` CI job no longer installs `build` to invoke a second one. This was
+  the only fleet repo on a different backend.
+
+  `[tool.setuptools.packages.find]` and `[tool.setuptools.package-data]` are
+  replaced by a single `[tool.poetry] packages` entry. poetry-core ships
+  every non-ignored file inside the package directory, so the bundled
+  `include/*.inc` textures need no declaration of their own -- all five land
+  in the wheel and the sdist, which the `wheel` job proves by installing the
+  artifact into a clean virtualenv where no source tree is in sight.
+
+- **Packaging metadata names the author as the rest of the fleet does**:
+  `Eric G. Suchanek, PhD` with an email, where the wheel previously carried
+  no `Author-email` at all. `pyproject.toml` also gains the fleet's
+  `Author:` / `License:` header block, without the `Last Revision:` line
+  that the fleet retired.
 
 - **The README reads as a Python tool with a lineage, rather than as a port
   defined by its ancestor.** It led with "a faithful Python port of `pdb2pov`
@@ -35,6 +48,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   table's `Pre-2.1 guess` column is `First-letter guess`. The
   `Differences from the C, in full` table stays -- the heritage is real and
   worth recording -- minus the note about both commands sharing a `PATH`.
+
+### Removed
+
+- **`PDB2POV_VERSION`**, and the second version number it carried. The package
+  tracked its own version alongside the pdb2pov release whose scenes it wrote,
+  and named both in every scene header and in `--version`. The distinction was
+  bookkeeping for a C program that is no longer in the picture: this is a
+  Python package with one version.
+
+  Scene headers lose the parenthesis -- `// Prepared by pypdb2pov 0.1.0 from
+  1CRN.pdb on ...` rather than `... 0.1.0 (pdb2pov 2.2) from ...` -- and
+  `--version` prints `pypdb2pov 0.1.0`. The constant is gone from the public
+  API, which drops from 40 names to 39.
 
 ## [0.1.0] - 2026-08-19
 
