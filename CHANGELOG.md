@@ -5,12 +5,36 @@ All notable changes to pypdb2pov are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-Two version numbers run in parallel and mean different things.
-`pypdb2pov.__version__` is this package's and is what these headings track.
-`pypdb2pov.PDB2POV_VERSION` is 2.2, the pdb2pov release whose scenes the
-package writes; it moves only when the scene format itself does.
-
 ## [Unreleased]
+
+### Removed
+
+- **`PDB2POV_VERSION`**, and the second version number it carried. The package
+  tracked its own version alongside the pdb2pov release whose scenes it wrote,
+  and named both in every scene header and in `--version`. The distinction was
+  bookkeeping for a C program that is no longer in the picture: this is a
+  Python package with one version.
+
+  Scene headers lose the parenthesis -- `// Prepared by pypdb2pov 0.1.0 from
+  1CRN.pdb on ...` rather than `... 0.1.0 (pdb2pov 2.2) from ...` -- and
+  `--version` prints `pypdb2pov 0.1.0`. The constant is gone from the public
+  API, which drops from 40 names to 39.
+
+### Changed
+
+- **The README reads as a Python tool with a lineage, rather than as a port
+  defined by its ancestor.** It led with "a faithful Python port of `pdb2pov`
+  2.2" and explained several behaviours by describing what the C did instead
+  of what this does. The lineage is stated once, plainly -- a Python port of
+  the 1993 C program by the same author, keeping its command-line vocabulary
+  -- and the rest describes the tool.
+
+  `What the port improves` is now `What it does`; the flag tables split by
+  what the flags are (`Scene, radii and geometry` / `Input, filtering and
+  reporting`) rather than by which era introduced them; and the element
+  table's `Pre-2.1 guess` column is `First-letter guess`. The
+  `Differences from the C, in full` table stays -- the heritage is real and
+  worth recording -- minus the note about both commands sharing a `PATH`.
 
 ## [0.1.0] - 2026-08-19
 

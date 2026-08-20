@@ -6,19 +6,21 @@
 
 # pypdb2pov -- PDB and mmCIF Structures as POV-Ray Scenes
 
-**pypdb2pov converts Brookhaven PDB and PDBx/mmCIF atomic structure files into
-POV-Ray scenes -- a faithful Python port of `pdb2pov` 2.2, with the formats,
-the scale, and the element chemistry the 1993 C program could not reach.**
+**pypdb2pov turns Brookhaven PDB and PDBx/mmCIF atomic structure files into
+POV-Ray scenes -- space-filling, ball-and-stick, or glass -- from one command
+or from Python.**
 
-Every flag means what it has meant since 1993, and the scenes it writes are the
-scenes that program wrote. What is new is everything around that: it reads
-mmCIF, so structures too large for the PDB format have a route into a render at
-all; it opens `.gz`, `.bz2` and `.xz` without a decompression step; its bond
-search is linear rather than quadratic, so fifty thousand atoms takes under a
-second; it infers elements from the atom name the way the format specifies
-instead of switching on the first letter; and nothing is ever dropped in
-silence -- skips, ambiguities and untextured atoms are all counted and
-reported with line numbers.
+It reads mmCIF, so structures too large for the PDB format render at all; it
+opens `.gz`, `.bz2` and `.xz` with no decompression step; its bond search is
+linear rather than quadratic, so fifty thousand atoms takes under a second; it
+infers elements from the atom name the way the format specifies rather than
+guessing from the first letter; and nothing is ever dropped in silence --
+skips, ambiguities and untextured atoms are all counted and reported with line
+numbers.
+
+It is a Python port of `pdb2pov`, the 1993 C program by the same author, and
+keeps that program's command-line vocabulary so existing invocations still mean
+what they meant. Everything else here is new.
 
 It is also a library. `read_structure` returns a plain list of `Atom`
 dataclasses carrying everything the readers recover, which makes it usable as a
@@ -39,23 +41,6 @@ inside the package, so a `pip install` is the whole setup.
   targeting VTK rather than a ray tracer.
 - **[KGRAG](https://github.com/Flux-Frontiers/KGRAG)** -- the knowledge-graph
   federation layer the rest of the Flux-Frontiers stack is built on.
-
----
-
-## Two version numbers, deliberately
-
-`pypdb2pov.__version__` is this package's, and starts at 0.1.0 because the
-package is new. `pypdb2pov.PDB2POV_VERSION` is 2.2 -- the pdb2pov release whose
-scenes it writes. Scene headers name both:
-
-```
-// Prepared by pypdb2pov 0.1.0 (pdb2pov 2.2) from 1CRN.pdb on 2026-08-19 ...
-```
-
-The distinction lets a port-only fix ship as 0.1.1 without a scene claiming the
-thirty-year-old C program changed. The name is also the reason there is no
-collision: the C program installs a binary called `pdb2pov` and this one
-installs `pypdb2pov`, so both can be on `PATH` at once.
 
 ---
 
@@ -98,10 +83,10 @@ Filenames may be given without extensions, as they always could -- `.pdb` (or
 `.pov`/`.inc` to the output. A path that exists as given is used as given, so
 `4hhb.cif.gz` works too. `-` is standard input or standard output.
 
-> **`-h` is the checkered ground, not help.** It has been since 1993, so
-> `--help` prints the usage message instead.
+> **`-h` is the checkered ground, not help.** It has meant that since 1993 and
+> still does, so `--help` prints the usage message instead.
 
-### The original flags
+### Scene, radii and geometry
 
 | Flag | Effect |
 |------|--------|
@@ -121,9 +106,9 @@ Filenames may be given without extensions, as they always could -- `.pdb` (or
 | `-t` | input is in `.atm` format |
 | `--chain IDS` | restrict to the given chain IDs |
 | `--keep-altlocs` | keep every alternate conformation |
-| `--legacy-elements` | guess elements from atom names, pre-2.1 style |
+| `--legacy-elements` | guess elements from atom names, first-letter style |
 
-### What is new
+### Input, filtering and reporting
 
 | Flag | Effect |
 |------|--------|
@@ -144,14 +129,13 @@ Filenames may be given without extensions, as they always could -- `.pdb` (or
 
 ---
 
-## What the port improves
+## What it does
 
 ### It reads mmCIF
 
 The PDB format ran out of room years ago -- five columns for a serial number,
 one for a chain -- so anything above 99,999 atoms or 62 chains is distributed
-only as PDBx/mmCIF, and `pdb2pov.c` cannot read a word of it. A ribosome, a
-capsid or a large complex had no route into a scene at all.
+only as PDBx/mmCIF. Ribosomes, capsids and large complexes are mmCIF-only.
 
 ```sh
 pypdb2pov 6xyz.cif.gz capsid -b -o
@@ -169,20 +153,19 @@ them. No decompression step, no temporary file.
 
 ### It understands models
 
-`MODEL`/`ENDMDL` are records, not accidents. The C stopped reading at the first
-line beginning `END`, which happens to be `ENDMDL` -- the right answer for an
-NMR ensemble, reached by the wrong route, with no way to ask for model 7. Here
-the default is the first model, `--model N` picks another, and `--all-models`
-keeps them all.
+`MODEL`/`ENDMDL` are parsed as records. The default is the first model in the
+file, `--model N` picks another, and `--all-models` converts every one. This
+matters for NMR ensembles, where a naive reader stops at the first line
+beginning `END` -- which happens to be `ENDMDL` -- and can never reach model 7.
 
-### It infers elements from more than seven letters
+### It infers elements properly
 
 Elements come from columns 77-78 when they are there. When they are not -- the
-file predates the column -- the fallback now reads the atom name the way the
-format specifies rather than switching on its first letter:
+file predates the column -- the atom name is read the way the format specifies
+rather than switched on its first letter:
 
-| Record | Residue | Pre-2.1 guess | Here |
-|--------|---------|---------------|------|
+| Record | Residue | First-letter guess | pypdb2pov |
+|--------|---------|--------------------|-----------|
 | ` NA ` | `HEM` | **sodium** | nitrogen (haem N-alpha) |
 | ` CD ` | `GLU` | carbon | carbon (glutamate C-delta) |
 | ` CD ` | ligand | carbon | cadmium, if column-aligned as one |
@@ -206,22 +189,22 @@ conversion **says so**:
       add an element column in 77-78, or use --legacy-elements, to override
 ```
 
-`--legacy-elements` still reproduces the 1993 behaviour exactly, mistakes
-included, for reproducing an existing render.
+`--legacy-elements` restores the first-letter guess exactly, mistakes included,
+for reproducing a render made with it.
 
 ### It gives alternate conformations a policy
 
 | `--altloc` | Behaviour |
 |------------|-----------|
-| `a` | keep the blank and `A` indicators -- the C's behaviour, and the default |
+| `a` | keep the blank and `A` indicators -- the historical default |
 | `first` | keep whichever indicator comes first for each atom |
 | `occupancy` | keep the highest-occupancy conformer, the crystallographer's answer |
-| `all` | keep everything, as pdb2pov did before 2.1 |
+| `all` | keep every conformation |
 
 `a` loses a residue entirely when a depositor labels its conformers `B` and `C`
 with no `A`. `first` does not, and is otherwise identical on conventionally
 ordered files. In 1CBN that is fourteen atoms -- the side chains of Pro 22 and
-Leu 25 -- that the C drops without a word.
+Leu 25 -- silently absent under `a`.
 
 The choice is made **per residue**, which matters for microheterogeneity: in
 that same entry residue 22 is modelled as serine at 0.20 occupancy *and*
@@ -231,15 +214,14 @@ residue that does not exist. `--altloc occupancy` picks the proline, whole.
 
 ### The bond search is linear, not quadratic
 
-The C compares every pair of atoms, twice -- once to count and once to record.
-That is fine for crambin's 327 atoms and hopeless above about ten thousand.
-Atoms now go into a uniform grid of cells one cutoff wide, so each one only
-looks at the 27 cells around it. 50,000 atoms takes well under a second.
+Comparing every pair of atoms is fine for crambin's 327 and hopeless above
+about ten thousand. Atoms go into a uniform grid of cells one cutoff wide, so
+each looks only at the 27 cells around it. 50,000 atoms takes well under a
+second.
 
-The results are identical, pair for pair and in the same order: the traversal
-order the hydrogen rule depends on is reproduced deliberately, and
-`tests/test_bonds.py` diffs the grid search against a transcription of the C's
-loop over random structures.
+The grid returns exactly what the pairwise scan returns, in the same order --
+the traversal order the hydrogen rule depends on is preserved deliberately, and
+`tests/test_bonds.py` diffs the two over random structures.
 
 `--bonds covalent` adds what a single cutoff cannot express -- a 1.1 Å C-H and
 a 2.05 Å disulphide in the same structure, without also bonding every carbon to
@@ -260,9 +242,8 @@ without writing anything.
 
 ### No fixed limits
 
-The C read into a 256-byte line buffer and a pre-counted fixed-size array; a
-line longer than the buffer was silently split into two records. There are no
-buffers here, and no pre-count pass -- files are read once.
+No line buffer, no pre-counted atom array, no pre-count pass. Files are read
+once, and a long record is a long record rather than two short ones.
 
 ---
 
@@ -339,7 +320,7 @@ Everything here is deliberate. Nothing else differs.
 
 | Area | C 2.2 | Python |
 |------|-------|--------|
-| Scene output | -- | the same, except the `Prepared by` line, which also names this package and the source file |
+| Scene output | -- | the same, except the `Prepared by` line, which names this package and the source file |
 | Element inference with no element column | seven-letter first-character guess | column- and residue-aware, with ambiguity reported |
 | `.atm` element handling | first-character guess | the same inference as PDB; `--legacy-elements` restores the guess |
 | Formats | PDB, `.atm` | plus mmCIF, plus `.gz`/`.bz2`/`.xz`, plus stdin |
@@ -348,7 +329,7 @@ Everything here is deliberate. Nothing else differs.
 | Line length | 256 bytes, longer lines split | unbounded |
 | Atom count | pre-counted, fixed array | unbounded |
 | Exit statuses | 0/2/3/4/5/6 | the same |
-| Command name | `pdb2pov` | `pypdb2pov`, so both can share a `PATH` |
+| Command name | `pdb2pov` | `pypdb2pov` |
 
 The `-t` `.atm` path is the one place a *default* differs in output: the format
 has no element column, and the port infers elements there the same way it does

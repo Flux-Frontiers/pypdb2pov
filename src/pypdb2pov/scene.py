@@ -29,7 +29,6 @@ from .structure import Extents, Structure
 
 __all__ = [
     "PYPDB2POV_VERSION",
-    "PDB2POV_VERSION",
     "POV_VERSION",
     "BOND_RAD",
     "SPHERE_FUDGE",
@@ -39,15 +38,8 @@ __all__ = [
     "write_scene",
 ]
 
-#: This package's own version.  It moves independently of the number below,
-#: so a port-only fix does not have to claim the C program changed.
+#: This package's version, and the only one there is.
 PYPDB2POV_VERSION = "0.1.0"
-
-#: The pdb2pov release these scenes are those of, kept in step with
-#: ``PDB2POV_VERSION`` in ``pdb2pov.h``.  The scenes are byte-identical to
-#: that release's, and a header claiming otherwise would be misleading, so
-#: this tracks the C rather than the package.
-PDB2POV_VERSION = "2.2"
 
 #: POV-Ray language level the emitted scenes are written against.
 POV_VERSION = "3.7"
@@ -246,13 +238,10 @@ def _write_header(
     origin = f" from {structure.source}" if structure.source else ""
 
     # Everything that varies between two runs of the same conversion lives on
-    # this one line, so the rest of the file can be compared byte for byte --
-    # both against a previous run and against the C program.
+    # this one line, so the rest of the file can be compared byte for byte
+    # against a previous run.
     out.append("//\n")
-    out.append(
-        f"// Prepared by {_TOOL} {PYPDB2POV_VERSION} "
-        f"(pdb2pov {PDB2POV_VERSION}){origin} on {stamp}\n"
-    )
+    out.append(f"// Prepared by {_TOOL} {PYPDB2POV_VERSION}{origin} on {stamp}\n")
     out.append("// Author: Eric G. Suchanek, Ph.D.\n")
     out.append("//\n")
     out.append(f"//\tAtoms: {structure.natoms:4d}\n")

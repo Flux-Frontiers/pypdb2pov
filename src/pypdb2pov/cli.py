@@ -30,7 +30,7 @@ from .options import (
     SceneOptions,
 )
 from .readers import ParseError, read_structure, resolve_input_path
-from .scene import PDB2POV_VERSION, POV_VERSION, pov_identifier, prepare_structure, write_scene
+from .scene import POV_VERSION, pov_identifier, prepare_structure, write_scene
 
 __all__ = ["main", "build_parser"]
 
@@ -284,7 +284,7 @@ def build_parser() -> argparse.ArgumentParser:
     misc.add_argument(
         "--version",
         action="version",
-        version=f"pypdb2pov {__version__} (pdb2pov {PDB2POV_VERSION} compatible)",
+        version=f"pypdb2pov {__version__}",
     )
     misc.add_argument("--help", action="help", help="show this message and exit")
 

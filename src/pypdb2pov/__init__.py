@@ -66,7 +66,6 @@ from .readers import (
 )
 from .scene import (
     BOND_RAD,
-    PDB2POV_VERSION,
     POV_VERSION,
     PYPDB2POV_VERSION,
     SPHERE_FUDGE,
@@ -82,7 +81,6 @@ __version__ = PYPDB2POV_VERSION
 
 __all__ = [
     "__version__",
-    "PDB2POV_VERSION",
     "POV_VERSION",
     "PYPDB2POV_VERSION",
     "ALL_MODELS",
