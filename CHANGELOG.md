@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-20
+
 ### Changed
 
 - **The license is BSD 3-Clause, which is what `LICENSE` said all along.**
