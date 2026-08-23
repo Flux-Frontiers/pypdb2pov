@@ -76,7 +76,7 @@ optional = true
 
 [tool.poetry.group.kg.dependencies]
 pycode-kg = ">=0.23.0"
-doc-kg = ">=0.21.2"
+doc-kg = ">=0.22.0"
 
 [project.scripts]
 pypdb2pov = "pypdb2pov.cli:main"
