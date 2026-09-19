@@ -52,8 +52,8 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 detect-secrets = ">=1.5.0"
 pre-commit = ">=4.5.1"
-pytest = ">=7"
-ruff = ">=0.4.0,<0.16"
+pytest = ">=9.0.3"
+ruff = ">=0.15,<0.16"
 ty = ">=0.0.41"
 
 # Maintainer knowledge-graph tooling, not a dependency of this package.
@@ -75,8 +75,8 @@ ty = ">=0.0.41"
 optional = true
 
 [tool.poetry.group.kg.dependencies]
-pycode-kg = ">=0.23.0"
-doc-kg = ">=0.22.0"
+pycode-kg = ">=0.27.1"
+doc-kg = ">=0.26.0"
 
 [project.scripts]
 pypdb2pov = "pypdb2pov.cli:main"
