@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Maintainer tooling brought current.** The `kg` group floors `pycode-kg`
+  0.27.1 and `doc-kg` 0.26.0, and the lock moves `kgmodule-utils` 0.18.0 ->
+  0.22.0 with them. The `dev` group floors `pytest` at 9.0.3, the fleet floor,
+  and `ruff` at 0.15, the line the lock already installs; the `<0.16` cap stays.
+  Both groups are Poetry groups, so the published wheel still declares no
+  dependencies.
+
 ## [0.1.1] - 2026-08-20
 
 ### Changed
