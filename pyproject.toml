@@ -56,28 +56,6 @@ pytest = ">=9.0.3"
 ruff = ">=0.15,<0.16"
 ty = ">=0.0.41"
 
-# Maintainer knowledge-graph tooling, not a dependency of this package.
-# `.mcp.json` serves `pycodekg` and `dockg` MCP servers from `.venv/bin/`, so
-# the CLIs have to be in this repo's environment -- but nothing under src/
-# imports either one, and declaring them as real dependencies would put them in
-# the published wheel for every consumer of a package whose whole point is that
-# it has none.
-#
-# A Poetry group is the right shape: it is locked and installable but never
-# written into wheel metadata, so `pip install pypdb2pov` is unaffected.
-#
-#   poetry install --with kg      # gets the CLIs into .venv/bin
-#   poetry install                # default -- the group is optional, skipped
-#
-# `kg` is the fleet-wide name for this group so there is one command to
-# remember; contents are per-repo and minimal.
-[tool.poetry.group.kg]
-optional = true
-
-[tool.poetry.group.kg.dependencies]
-pycode-kg = ">=0.27.1"
-doc-kg = ">=0.26.0"
-
 [project.scripts]
 pypdb2pov = "pypdb2pov.cli:main"
 
