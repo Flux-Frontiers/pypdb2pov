@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **An Art Techno logo.** The ray: a camera die casts three rays into an
+  atom, a ray-traced sphere, with the tagline STRUCTURES AS SCENES.
+  `scripts/build_logo.py` draws the mark, a 64 px icon and a banner as SVG
+  under `assets/` and writes the PNGs. The README shows the banner at the
+  top, by absolute raw URL so PyPI shows it too. No code changes.
+
 ### Changed
 
 - **The `kg` Poetry group is gone** (`kgrag_priv` sweep item 50, phase 1).
